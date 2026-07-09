@@ -18,6 +18,7 @@ export default async function CustomerListPage({
   let query = supabase
     .from("customers")
     .select("id, name, created_at")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (keyword) {
@@ -34,9 +35,17 @@ export default async function CustomerListPage({
 
       <div className="mb-4 flex items-center justify-between gap-3">
         <h1 className="text-xl font-bold text-foreground">顧客一覧</h1>
-        <Link href="/customers/new" className={buttonPrimary}>
-          + 新規顧客
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/trash"
+            className="flex min-h-11 items-center rounded-lg px-2 text-sm text-muted active:bg-surface-muted"
+          >
+            🗑 ゴミ箱
+          </Link>
+          <Link href="/customers/new" className={buttonPrimary}>
+            + 新規顧客
+          </Link>
+        </div>
       </div>
 
       <div className="relative mb-4">

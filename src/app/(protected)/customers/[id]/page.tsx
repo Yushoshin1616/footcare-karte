@@ -21,6 +21,7 @@ export default async function CustomerDetailPage({
     .from("customers")
     .select("*")
     .eq("id", id)
+    .is("deleted_at", null)
     .single();
 
   if (customerError || !customer) {

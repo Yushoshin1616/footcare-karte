@@ -26,7 +26,7 @@ export function DeleteCustomerButton({
       onSubmit={(e) => {
         if (
           !confirm(
-            `${customerName} さんを削除します。\nすべての記録・写真も一緒に削除され、元に戻せません。本当によろしいですか？`
+            `${customerName} さんを削除します。\n一覧には表示されなくなりますが、「ゴミ箱」から元に戻すこともできます。よろしいですか？`
           )
         ) {
           e.preventDefault();

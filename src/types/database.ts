@@ -17,6 +17,7 @@ export interface Database {
           memo: string | null;
           created_at: string;
           created_by: string | null;
+          deleted_at: string | null;
         };
         Insert: {
           id?: string;
@@ -25,6 +26,7 @@ export interface Database {
           memo?: string | null;
           created_at?: string;
           created_by?: string | null;
+          deleted_at?: string | null;
         };
         Update: {
           id?: string;
@@ -33,6 +35,7 @@ export interface Database {
           memo?: string | null;
           created_at?: string;
           created_by?: string | null;
+          deleted_at?: string | null;
         };
         Relationships: [];
       };

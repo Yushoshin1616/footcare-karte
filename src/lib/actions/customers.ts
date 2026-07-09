@@ -44,9 +44,34 @@ export async function deleteCustomer(formData: FormData) {
   if (!customerId) redirect("/");
 
   const supabase = await createClient();
+  await supabase
+    .from("customers")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", customerId);
 
+  redirect("/?saved=customer-deleted");
+}
+
+export async function restoreCustomer(formData: FormData) {
+  const customerId = String(formData.get("customer_id") || "");
+  if (!customerId) redirect("/trash");
+
+  const supabase = await createClient();
+  await supabase
+    .from("customers")
+    .update({ deleted_at: null })
+    .eq("id", customerId);
+
+  redirect(`/customers/${customerId}?saved=customer-restored`);
+}
+
+export async function permanentlyDeleteCustomer(formData: FormData) {
+  const customerId = String(formData.get("customer_id") || "");
+  if (!customerId) redirect("/trash");
+
+  const supabase = await createClient();
   await supabase.from("customers").delete().eq("id", customerId);
   await deleteFolder(supabase, `customers/${customerId}`).catch(() => {});
 
-  redirect("/?saved=customer-deleted");
+  redirect("/trash?saved=customer-purged");
 }
