@@ -12,9 +12,7 @@ export default async function LoginPage({
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-foreground">
-            フットケアサロン
-            <br />
-            カルテ管理
+            顧客管理カルテ
           </h1>
           <p className="mt-2 text-sm text-muted">
             スタッフ用ログイン

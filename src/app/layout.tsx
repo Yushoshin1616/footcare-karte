@@ -10,7 +10,7 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "フットケアサロン カルテ管理",
+  title: "顧客管理カルテ",
   description: "フットケアサロン向け顧客カルテ管理アプリ",
 };
 
