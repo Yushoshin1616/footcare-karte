@@ -1,16 +1,28 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import type { RecordFormState } from "@/lib/actions/records";
 import { buttonPrimary, inputBase, labelBase, textareaBase } from "@/lib/ui";
 import { MultiPhotoInput } from "@/components/MultiPhotoInput";
 
-function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: string }) {
+function SubmitButton({
+  label,
+  pendingLabel,
+  extraDisabled,
+}: {
+  label: string;
+  pendingLabel: string;
+  extraDisabled: boolean;
+}) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className={`${buttonPrimary} w-full`} disabled={pending}>
-      {pending ? pendingLabel : label}
+    <button
+      type="submit"
+      className={`${buttonPrimary} w-full`}
+      disabled={pending || extraDisabled}
+    >
+      {pending ? pendingLabel : extraDisabled ? "写真を送信中…" : label}
     </button>
   );
 }
@@ -23,6 +35,8 @@ export function RecordForm({
   submitPendingLabel,
   defaultDate,
   defaultMemo = "",
+  customerId,
+  recordId,
   existingPhotos = [],
 }: {
   action: (state: RecordFormState, formData: FormData) => Promise<RecordFormState>;
@@ -30,13 +44,19 @@ export function RecordForm({
   submitPendingLabel: string;
   defaultDate: string;
   defaultMemo?: string;
+  customerId: string;
+  recordId?: string;
   existingPhotos?: { path: string; url: string }[];
 }) {
   const [state, formAction] = useActionState(action, initialState);
+  const [id] = useState(() => recordId ?? crypto.randomUUID());
+  const [uploading, setUploading] = useState(false);
 
   return (
-    <form action={formAction} className="flex flex-col gap-5">
-      <div>
+    <form action={formAction} className="flex min-w-0 flex-col gap-5">
+      <input type="hidden" name="record_id" value={id} />
+
+      <div className="min-w-0">
         <label htmlFor="treatment_date" className={labelBase}>
           施術日 <span className="text-danger">*</span>
         </label>
@@ -46,14 +66,15 @@ export function RecordForm({
           type="date"
           required
           defaultValue={defaultDate}
-          className={inputBase}
+          className={`${inputBase} w-full min-w-0 max-w-full`}
         />
       </div>
 
       <MultiPhotoInput
-        name="photos"
+        pathPrefix={`customers/${customerId}/records/${id}`}
         label="記録写真"
         existingPhotos={existingPhotos}
+        onUploadingChange={setUploading}
       />
 
       <div>
@@ -75,7 +96,11 @@ export function RecordForm({
         </p>
       )}
 
-      <SubmitButton label={submitLabel} pendingLabel={submitPendingLabel} />
+      <SubmitButton
+        label={submitLabel}
+        pendingLabel={submitPendingLabel}
+        extraDisabled={uploading}
+      />
     </form>
   );
 }

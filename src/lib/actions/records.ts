@@ -3,22 +3,14 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { uploadPhotos, validatePhoto } from "@/lib/storage";
 
 export type RecordFormState = { error: string | null };
 
-function extractPhotoFiles(formData: FormData): File[] {
+function extractNewPhotoPaths(formData: FormData, expectedPrefix: string): string[] {
   return formData
-    .getAll("photos")
-    .filter((f): f is File => f instanceof File && f.size > 0);
-}
-
-function validatePhotos(files: File[]): string | null {
-  for (const file of files) {
-    const error = validatePhoto(file);
-    if (error) return error;
-  }
-  return null;
+    .getAll("new_photo_paths")
+    .map((v) => String(v))
+    .filter((p) => p.startsWith(`${expectedPrefix}/`));
 }
 
 export async function createRecord(
@@ -26,6 +18,7 @@ export async function createRecord(
   _prevState: RecordFormState,
   formData: FormData
 ): Promise<RecordFormState> {
+  const id = String(formData.get("record_id") || "").trim() || crypto.randomUUID();
   const treatmentDate = String(formData.get("treatment_date") || "");
   const memo = String(formData.get("memo") || "").trim();
 
@@ -33,31 +26,15 @@ export async function createRecord(
     return { error: "施術日を選択してください。" };
   }
 
-  const photoFiles = extractPhotoFiles(formData);
-  const validationError = validatePhotos(photoFiles);
-  if (validationError) return { error: validationError };
+  const photoPaths = extractNewPhotoPaths(
+    formData,
+    `customers/${customerId}/records/${id}`
+  );
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const id = crypto.randomUUID();
-  let photoPaths: string[] = [];
-
-  if (photoFiles.length > 0) {
-    try {
-      photoPaths = await uploadPhotos(
-        supabase,
-        photoFiles,
-        `customers/${customerId}/records/${id}`
-      );
-    } catch (e) {
-      return {
-        error: e instanceof Error ? e.message : "写真のアップロードに失敗しました。",
-      };
-    }
-  }
 
   const { error } = await supabase.from("records").insert({
     id,
@@ -88,14 +65,14 @@ export async function updateRecord(
   const removePaths = new Set(
     formData.getAll("remove_photo_paths").map((v) => String(v))
   );
+  const newPaths = extractNewPhotoPaths(
+    formData,
+    `customers/${customerId}/records/${recordId}`
+  );
 
   if (!treatmentDate) {
     return { error: "施術日を選択してください。" };
   }
-
-  const photoFiles = extractPhotoFiles(formData);
-  const validationError = validatePhotos(photoFiles);
-  if (validationError) return { error: validationError };
 
   const supabase = await createClient();
   const {
@@ -110,21 +87,6 @@ export async function updateRecord(
 
   if (fetchError || !current) {
     return { error: "記録が見つかりませんでした。" };
-  }
-
-  let newPaths: string[] = [];
-  if (photoFiles.length > 0) {
-    try {
-      newPaths = await uploadPhotos(
-        supabase,
-        photoFiles,
-        `customers/${customerId}/records/${recordId}`
-      );
-    } catch (e) {
-      return {
-        error: e instanceof Error ? e.message : "写真のアップロードに失敗しました。",
-      };
-    }
   }
 
   const keptPaths = current.photo_paths.filter((p) => !removePaths.has(p));

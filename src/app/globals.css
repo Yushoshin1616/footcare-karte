@@ -78,6 +78,17 @@ select {
   font-size: 16px;
 }
 
+/* Android Chrome などで日付入力のカレンダーアイコンが枠からはみ出すのを防ぐ */
+input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  margin-left: 4px;
+}
+
 @keyframes saved-banner {
   0% {
     opacity: 0;

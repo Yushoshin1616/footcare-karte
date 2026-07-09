@@ -76,7 +76,10 @@ export default async function CustomerDetailPage({
       )}
 
       <div className="mb-3">
-        <QuickPhotoRecordButton action={createRecord.bind(null, id)} />
+        <QuickPhotoRecordButton
+          customerId={id}
+          action={createRecord.bind(null, id)}
+        />
       </div>
 
       <div className="mb-4">

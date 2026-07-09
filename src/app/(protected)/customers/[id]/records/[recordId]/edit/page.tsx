@@ -57,6 +57,8 @@ export default async function EditRecordPage({
           submitPendingLabel="保存中…"
           defaultDate={record.treatment_date}
           defaultMemo={record.memo}
+          customerId={id}
+          recordId={recordId}
           existingPhotos={record.photo_paths
             .filter((p) => photoUrlMap[p])
             .map((p) => ({ path: p, url: photoUrlMap[p] }))}

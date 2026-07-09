@@ -48,18 +48,6 @@ export async function uploadPhoto(
   return path;
 }
 
-export async function uploadPhotos(
-  supabase: SupabaseClient<Database>,
-  files: File[],
-  pathPrefix: string
-): Promise<string[]> {
-  const paths: string[] = [];
-  for (const file of files) {
-    paths.push(await uploadPhoto(supabase, file, pathPrefix));
-  }
-  return paths;
-}
-
 export async function getSignedUrls(
   supabase: SupabaseClient<Database>,
   paths: (string | null | undefined)[],

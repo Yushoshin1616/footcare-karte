@@ -43,6 +43,7 @@ export default async function NewRecordPage({
           submitLabel="記録を保存"
           submitPendingLabel="保存中…"
           defaultDate={todayInputValue()}
+          customerId={id}
         />
       </div>
     </div>
