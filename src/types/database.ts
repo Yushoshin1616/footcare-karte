@@ -13,7 +13,6 @@ export interface Database {
         Row: {
           id: string;
           name: string;
-          photo_path: string | null;
           phone: string | null;
           memo: string | null;
           created_at: string;
@@ -22,7 +21,6 @@ export interface Database {
         Insert: {
           id?: string;
           name: string;
-          photo_path?: string | null;
           phone?: string | null;
           memo?: string | null;
           created_at?: string;
@@ -31,7 +29,6 @@ export interface Database {
         Update: {
           id?: string;
           name?: string;
-          photo_path?: string | null;
           phone?: string | null;
           memo?: string | null;
           created_at?: string;
@@ -44,7 +41,7 @@ export interface Database {
           id: string;
           customer_id: string;
           treatment_date: string;
-          photo_path: string | null;
+          photo_paths: string[];
           memo: string;
           created_at: string;
           updated_at: string;
@@ -55,7 +52,7 @@ export interface Database {
           id?: string;
           customer_id: string;
           treatment_date: string;
-          photo_path?: string | null;
+          photo_paths?: string[];
           memo?: string;
           created_at?: string;
           updated_at?: string;
@@ -66,7 +63,7 @@ export interface Database {
           id?: string;
           customer_id?: string;
           treatment_date?: string;
-          photo_path?: string | null;
+          photo_paths?: string[];
           memo?: string;
           created_at?: string;
           updated_at?: string;
@@ -80,7 +77,7 @@ export interface Database {
           id: string;
           record_id: string;
           treatment_date: string;
-          photo_path: string | null;
+          photo_paths: string[];
           memo: string;
           snapshot_at: string;
           edited_by: string | null;
@@ -90,7 +87,7 @@ export interface Database {
           id?: string;
           record_id: string;
           treatment_date: string;
-          photo_path?: string | null;
+          photo_paths?: string[];
           memo?: string;
           snapshot_at?: string;
           edited_by?: string | null;
@@ -100,7 +97,7 @@ export interface Database {
           id?: string;
           record_id?: string;
           treatment_date?: string;
-          photo_path?: string | null;
+          photo_paths?: string[];
           memo?: string;
           snapshot_at?: string;
           edited_by?: string | null;

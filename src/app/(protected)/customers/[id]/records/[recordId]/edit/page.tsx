@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSignedUrl, getSignedUrls } from "@/lib/storage";
+import { getSignedUrls } from "@/lib/storage";
 import { updateRecord } from "@/lib/actions/records";
 import { RecordForm } from "@/components/RecordForm";
 import { RecordHistoryList } from "@/components/RecordHistoryList";
@@ -26,10 +26,11 @@ export default async function EditRecordPage({
 
   if (!customer || !record) notFound();
 
-  const [currentPhotoUrl, historyPhotoMap] = await Promise.all([
-    getSignedUrl(supabase, record.photo_path),
-    getSignedUrls(supabase, (history ?? []).map((h) => h.photo_path)),
-  ]);
+  const allPaths = [
+    ...record.photo_paths,
+    ...(history ?? []).flatMap((h) => h.photo_paths),
+  ];
+  const photoUrlMap = await getSignedUrls(supabase, allPaths);
 
   const action = updateRecord.bind(null, id, recordId);
 
@@ -56,8 +57,9 @@ export default async function EditRecordPage({
           submitPendingLabel="保存中…"
           defaultDate={record.treatment_date}
           defaultMemo={record.memo}
-          initialPhotoUrl={currentPhotoUrl}
-          allowRemoveExisting
+          existingPhotos={record.photo_paths
+            .filter((p) => photoUrlMap[p])
+            .map((p) => ({ path: p, url: photoUrlMap[p] }))}
         />
       </div>
 
@@ -70,7 +72,9 @@ export default async function EditRecordPage({
           memo: h.memo,
           snapshot_at: h.snapshot_at,
           reason: h.reason,
-          photoUrl: historyPhotoMap[h.photo_path ?? ""] ?? null,
+          photoUrls: h.photo_paths
+            .filter((p) => photoUrlMap[p])
+            .map((p) => photoUrlMap[p]),
         }))}
       />
     </div>

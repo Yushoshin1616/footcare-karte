@@ -7,7 +7,6 @@ import {
   type CustomerFormState,
 } from "@/lib/actions/customers";
 import { buttonPrimary, inputBase, labelBase, textareaBase } from "@/lib/ui";
-import { PhotoInput } from "@/components/PhotoInput";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -25,12 +24,6 @@ export function CustomerForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
-      <PhotoInput
-        name="photo"
-        label="本人確認用の写真"
-        caption="一覧でお客様を見分けるための写真です。施術部位の状態は「記録」側の写真で管理します。"
-      />
-
       <div>
         <label htmlFor="name" className={labelBase}>
           お名前 <span className="text-danger">*</span>

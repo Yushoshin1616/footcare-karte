@@ -32,9 +32,9 @@ export function QuickPhotoRecordButton({
           <CaptureLabel />
           <input
             type="file"
-            name="photo"
+            name="photos"
             accept="image/*"
-            capture="environment"
+            multiple
             className="sr-only"
             onChange={() => formRef.current?.requestSubmit()}
           />

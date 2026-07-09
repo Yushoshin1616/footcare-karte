@@ -7,7 +7,7 @@ export function RecordCard({
   recordId,
   treatmentDate,
   memo,
-  photoUrl,
+  photoUrls,
   createdAt,
   updatedAt,
 }: {
@@ -15,7 +15,7 @@ export function RecordCard({
   recordId: string;
   treatmentDate: string;
   memo: string;
-  photoUrl: string | null;
+  photoUrls: string[];
   createdAt: string;
   updatedAt: string;
 }) {
@@ -41,15 +41,34 @@ export function RecordCard({
         </Link>
       </div>
 
-      {photoUrl && (
+      {photoUrls.length === 1 && (
         <div className="relative mb-3 h-48 w-full overflow-hidden rounded-xl bg-surface-muted">
           <Image
-            src={photoUrl}
+            src={photoUrls[0]}
             alt={`${formatDateOnly(treatmentDate)}の記録写真`}
             fill
             unoptimized
             className="object-cover"
           />
+        </div>
+      )}
+
+      {photoUrls.length > 1 && (
+        <div className="mb-3 grid grid-cols-3 gap-2">
+          {photoUrls.map((url, i) => (
+            <div
+              key={url}
+              className="relative aspect-square overflow-hidden rounded-xl bg-surface-muted"
+            >
+              <Image
+                src={url}
+                alt={`${formatDateOnly(treatmentDate)}の記録写真 ${i + 1}`}
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            </div>
+          ))}
         </div>
       )}
 

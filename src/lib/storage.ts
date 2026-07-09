@@ -21,17 +21,16 @@ export async function uploadPhoto(
   return path;
 }
 
-export async function getSignedUrl(
+export async function uploadPhotos(
   supabase: SupabaseClient<Database>,
-  path: string | null,
-  expiresInSeconds = 60 * 60
-): Promise<string | null> {
-  if (!path) return null;
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(path, expiresInSeconds);
-  if (error) return null;
-  return data.signedUrl;
+  files: File[],
+  pathPrefix: string
+): Promise<string[]> {
+  const paths: string[] = [];
+  for (const file of files) {
+    paths.push(await uploadPhoto(supabase, file, pathPrefix));
+  }
+  return paths;
 }
 
 export async function getSignedUrls(

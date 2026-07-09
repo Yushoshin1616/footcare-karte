@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { uploadPhoto, validatePhoto } from "@/lib/storage";
 
 export type CustomerFormState = { error: string | null };
 
@@ -13,7 +12,6 @@ export async function createCustomer(
   const name = String(formData.get("name") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
   const memo = String(formData.get("memo") || "").trim();
-  const photo = formData.get("photo");
 
   if (!name) {
     return { error: "お名前を入力してください。" };
@@ -24,34 +22,20 @@ export async function createCustomer(
     data: { user },
   } = await supabase.auth.getUser();
 
-  const id = crypto.randomUUID();
-  let photoPath: string | null = null;
+  const { data, error } = await supabase
+    .from("customers")
+    .insert({
+      name,
+      phone: phone || null,
+      memo: memo || null,
+      created_by: user?.id ?? null,
+    })
+    .select("id")
+    .single();
 
-  if (photo instanceof File && photo.size > 0) {
-    const validationError = validatePhoto(photo);
-    if (validationError) return { error: validationError };
-
-    try {
-      photoPath = await uploadPhoto(supabase, photo, `customers/${id}/profile`);
-    } catch (e) {
-      return {
-        error: e instanceof Error ? e.message : "写真のアップロードに失敗しました。",
-      };
-    }
-  }
-
-  const { error } = await supabase.from("customers").insert({
-    id,
-    name,
-    phone: phone || null,
-    memo: memo || null,
-    photo_path: photoPath,
-    created_by: user?.id ?? null,
-  });
-
-  if (error) {
+  if (error || !data) {
     return { error: "顧客の登録に失敗しました。時間をおいて再度お試しください。" };
   }
 
-  redirect(`/customers/${id}?saved=customer`);
+  redirect(`/customers/${data.id}?saved=customer`);
 }

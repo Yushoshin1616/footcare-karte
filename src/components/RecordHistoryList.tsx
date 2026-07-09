@@ -8,7 +8,7 @@ type HistoryEntry = {
   memo: string;
   snapshot_at: string;
   reason: string;
-  photoUrl: string | null;
+  photoUrls: string[];
 };
 
 export function RecordHistoryList({
@@ -37,15 +37,22 @@ export function RecordHistoryList({
             <p className="mt-1 text-sm font-semibold text-foreground">
               施術日: {formatDateOnly(entry.treatment_date)}
             </p>
-            {entry.photoUrl && (
-              <div className="relative mt-2 h-32 w-full overflow-hidden rounded-lg">
-                <Image
-                  src={entry.photoUrl}
-                  alt="編集前の写真"
-                  fill
-                  unoptimized
-                  className="object-cover"
-                />
+            {entry.photoUrls.length > 0 && (
+              <div className="mt-2 grid grid-cols-3 gap-2">
+                {entry.photoUrls.map((url, i) => (
+                  <div
+                    key={url}
+                    className="relative aspect-square overflow-hidden rounded-lg"
+                  >
+                    <Image
+                      src={url}
+                      alt={`編集前の写真 ${i + 1}`}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
               </div>
             )}
             {entry.memo && (

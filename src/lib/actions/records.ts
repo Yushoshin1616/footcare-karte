@@ -3,20 +3,22 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { uploadPhoto, validatePhoto } from "@/lib/storage";
+import { uploadPhotos, validatePhoto } from "@/lib/storage";
 
 export type RecordFormState = { error: string | null };
 
-async function extractPhoto(
-  formData: FormData
-): Promise<{ file: File | null; error: string | null }> {
-  const photo = formData.get("photo");
-  if (!(photo instanceof File) || photo.size === 0) {
-    return { file: null, error: null };
+function extractPhotoFiles(formData: FormData): File[] {
+  return formData
+    .getAll("photos")
+    .filter((f): f is File => f instanceof File && f.size > 0);
+}
+
+function validatePhotos(files: File[]): string | null {
+  for (const file of files) {
+    const error = validatePhoto(file);
+    if (error) return error;
   }
-  const validationError = validatePhoto(photo);
-  if (validationError) return { file: null, error: validationError };
-  return { file: photo, error: null };
+  return null;
 }
 
 export async function createRecord(
@@ -31,8 +33,9 @@ export async function createRecord(
     return { error: "施術日を選択してください。" };
   }
 
-  const { file: photoFile, error: photoError } = await extractPhoto(formData);
-  if (photoError) return { error: photoError };
+  const photoFiles = extractPhotoFiles(formData);
+  const validationError = validatePhotos(photoFiles);
+  if (validationError) return { error: validationError };
 
   const supabase = await createClient();
   const {
@@ -40,13 +43,13 @@ export async function createRecord(
   } = await supabase.auth.getUser();
 
   const id = crypto.randomUUID();
-  let photoPath: string | null = null;
+  let photoPaths: string[] = [];
 
-  if (photoFile) {
+  if (photoFiles.length > 0) {
     try {
-      photoPath = await uploadPhoto(
+      photoPaths = await uploadPhotos(
         supabase,
-        photoFile,
+        photoFiles,
         `customers/${customerId}/records/${id}`
       );
     } catch (e) {
@@ -61,7 +64,7 @@ export async function createRecord(
     customer_id: customerId,
     treatment_date: treatmentDate,
     memo,
-    photo_path: photoPath,
+    photo_paths: photoPaths,
     created_by: user?.id ?? null,
     updated_by: user?.id ?? null,
   });
@@ -82,14 +85,17 @@ export async function updateRecord(
 ): Promise<RecordFormState> {
   const treatmentDate = String(formData.get("treatment_date") || "");
   const memo = String(formData.get("memo") || "").trim();
-  const removePhoto = formData.get("remove_photo") === "on";
+  const removePaths = new Set(
+    formData.getAll("remove_photo_paths").map((v) => String(v))
+  );
 
   if (!treatmentDate) {
     return { error: "施術日を選択してください。" };
   }
 
-  const { file: photoFile, error: photoError } = await extractPhoto(formData);
-  if (photoError) return { error: photoError };
+  const photoFiles = extractPhotoFiles(formData);
+  const validationError = validatePhotos(photoFiles);
+  if (validationError) return { error: validationError };
 
   const supabase = await createClient();
   const {
@@ -106,12 +112,12 @@ export async function updateRecord(
     return { error: "記録が見つかりませんでした。" };
   }
 
-  let photoPath = current.photo_path;
-  if (photoFile) {
+  let newPaths: string[] = [];
+  if (photoFiles.length > 0) {
     try {
-      photoPath = await uploadPhoto(
+      newPaths = await uploadPhotos(
         supabase,
-        photoFile,
+        photoFiles,
         `customers/${customerId}/records/${recordId}`
       );
     } catch (e) {
@@ -119,14 +125,15 @@ export async function updateRecord(
         error: e instanceof Error ? e.message : "写真のアップロードに失敗しました。",
       };
     }
-  } else if (removePhoto) {
-    photoPath = null;
   }
+
+  const keptPaths = current.photo_paths.filter((p) => !removePaths.has(p));
+  const photoPaths = [...keptPaths, ...newPaths];
 
   const { error: historyError } = await supabase.from("record_history").insert({
     record_id: recordId,
     treatment_date: current.treatment_date,
-    photo_path: current.photo_path,
+    photo_paths: current.photo_paths,
     memo: current.memo,
     edited_by: user?.id ?? null,
     reason: "update",
@@ -141,7 +148,7 @@ export async function updateRecord(
     .update({
       treatment_date: treatmentDate,
       memo,
-      photo_path: photoPath,
+      photo_paths: photoPaths,
       updated_by: user?.id ?? null,
     })
     .eq("id", recordId);
@@ -176,7 +183,7 @@ export async function revertRecord(formData: FormData) {
   await supabase.from("record_history").insert({
     record_id: recordId,
     treatment_date: current.treatment_date,
-    photo_path: current.photo_path,
+    photo_paths: current.photo_paths,
     memo: current.memo,
     edited_by: user?.id ?? null,
     reason: "revert",
@@ -186,7 +193,7 @@ export async function revertRecord(formData: FormData) {
     .from("records")
     .update({
       treatment_date: history.treatment_date,
-      photo_path: history.photo_path,
+      photo_paths: history.photo_paths,
       memo: history.memo,
       updated_by: user?.id ?? null,
     })

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSignedUrl, getSignedUrls } from "@/lib/storage";
+import { getSignedUrls } from "@/lib/storage";
 import { createRecord } from "@/lib/actions/records";
 import { CustomerAvatar } from "@/components/CustomerAvatar";
 import { RecordCard } from "@/components/RecordCard";
@@ -35,10 +35,10 @@ export default async function CustomerDetailPage({
     .order("treatment_date", { ascending: false })
     .order("created_at", { ascending: false });
 
-  const [customerPhotoUrl, recordPhotoMap] = await Promise.all([
-    getSignedUrl(supabase, customer.photo_path),
-    getSignedUrls(supabase, (records ?? []).map((r) => r.photo_path)),
-  ]);
+  const photoUrlMap = await getSignedUrls(
+    supabase,
+    (records ?? []).flatMap((r) => r.photo_paths)
+  );
 
   return (
     <div className="mx-auto max-w-lg px-4 pt-4">
@@ -57,7 +57,7 @@ export default async function CustomerDetailPage({
       </div>
 
       <div className="mb-6 flex items-center gap-4">
-        <CustomerAvatar url={customerPhotoUrl} name={customer.name} size={72} />
+        <CustomerAvatar name={customer.name} size={72} />
         <div>
           <h1 className="text-xl font-bold text-foreground">{customer.name}</h1>
           {customer.phone && (
@@ -112,7 +112,9 @@ export default async function CustomerDetailPage({
               recordId={record.id}
               treatmentDate={record.treatment_date}
               memo={record.memo}
-              photoUrl={recordPhotoMap[record.photo_path ?? ""] ?? null}
+              photoUrls={record.photo_paths
+                .map((p) => photoUrlMap[p])
+                .filter((u): u is string => !!u)}
               createdAt={record.created_at}
               updatedAt={record.updated_at}
             />

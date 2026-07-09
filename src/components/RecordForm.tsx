@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import type { RecordFormState } from "@/lib/actions/records";
 import { buttonPrimary, inputBase, labelBase, textareaBase } from "@/lib/ui";
-import { PhotoInput } from "@/components/PhotoInput";
+import { MultiPhotoInput } from "@/components/MultiPhotoInput";
 
 function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
@@ -23,16 +23,14 @@ export function RecordForm({
   submitPendingLabel,
   defaultDate,
   defaultMemo = "",
-  initialPhotoUrl = null,
-  allowRemoveExisting = false,
+  existingPhotos = [],
 }: {
   action: (state: RecordFormState, formData: FormData) => Promise<RecordFormState>;
   submitLabel: string;
   submitPendingLabel: string;
   defaultDate: string;
   defaultMemo?: string;
-  initialPhotoUrl?: string | null;
-  allowRemoveExisting?: boolean;
+  existingPhotos?: { path: string; url: string }[];
 }) {
   const [state, formAction] = useActionState(action, initialState);
 
@@ -52,11 +50,10 @@ export function RecordForm({
         />
       </div>
 
-      <PhotoInput
-        name="photo"
+      <MultiPhotoInput
+        name="photos"
         label="記録写真"
-        initialUrl={initialPhotoUrl}
-        allowRemoveExisting={allowRemoveExisting}
+        existingPhotos={existingPhotos}
       />
 
       <div>

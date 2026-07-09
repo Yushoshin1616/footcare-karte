@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getSignedUrls } from "@/lib/storage";
 import { SearchBox } from "@/components/SearchBox";
 import { CustomerAvatar } from "@/components/CustomerAvatar";
 import { buttonPrimary } from "@/lib/ui";
@@ -16,7 +15,7 @@ export default async function CustomerListPage({
 
   let query = supabase
     .from("customers")
-    .select("id, name, photo_path, created_at")
+    .select("id, name, created_at")
     .order("created_at", { ascending: false });
 
   if (keyword) {
@@ -24,12 +23,6 @@ export default async function CustomerListPage({
   }
 
   const { data: customers, error } = await query;
-  const photoMap = customers
-    ? await getSignedUrls(
-        supabase,
-        customers.map((c) => c.photo_path)
-      )
-    : {};
 
   return (
     <div className="mx-auto max-w-lg px-4 pt-4">
@@ -80,11 +73,7 @@ export default async function CustomerListPage({
                 href={`/customers/${customer.id}`}
                 className="flex min-h-20 items-center gap-4 rounded-2xl border border-border bg-surface px-4 py-3 active:bg-surface-muted"
               >
-                <CustomerAvatar
-                  url={photoMap[customer.photo_path ?? ""] ?? null}
-                  name={customer.name}
-                  size={64}
-                />
+                <CustomerAvatar name={customer.name} size={64} />
                 <span className="flex-1 text-lg font-medium text-foreground">
                   {customer.name}
                 </span>
