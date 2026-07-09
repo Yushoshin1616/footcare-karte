@@ -77,3 +77,26 @@ textarea,
 select {
   font-size: 16px;
 }
+
+@keyframes saved-banner {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.animate-saved-banner {
+  animation: saved-banner 3s ease forwards;
+}

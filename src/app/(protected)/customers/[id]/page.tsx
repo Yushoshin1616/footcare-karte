@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSignedUrl, getSignedUrls } from "@/lib/storage";
@@ -6,6 +7,7 @@ import { createRecord } from "@/lib/actions/records";
 import { CustomerAvatar } from "@/components/CustomerAvatar";
 import { RecordCard } from "@/components/RecordCard";
 import { QuickPhotoRecordButton } from "@/components/QuickPhotoRecordButton";
+import { SavedBanner } from "@/components/SavedBanner";
 import { buttonSecondary } from "@/lib/ui";
 
 export default async function CustomerDetailPage({
@@ -40,6 +42,10 @@ export default async function CustomerDetailPage({
 
   return (
     <div className="mx-auto max-w-lg px-4 pt-4">
+      <Suspense fallback={null}>
+        <SavedBanner />
+      </Suspense>
+
       <div className="mb-4 flex items-center gap-2">
         <Link
           href="/"
@@ -77,7 +83,7 @@ export default async function CustomerDetailPage({
           href={`/customers/${id}/records/new`}
           className={`${buttonSecondary} w-full`}
         >
-          + 記録を追加（日付・メモを指定）
+          📅 日付やメモを指定して記録
         </Link>
       </div>
 

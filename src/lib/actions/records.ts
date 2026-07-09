@@ -71,7 +71,7 @@ export async function createRecord(
   }
 
   revalidatePath(`/customers/${customerId}`);
-  redirect(`/customers/${customerId}`);
+  redirect(`/customers/${customerId}?saved=record`);
 }
 
 export async function updateRecord(
@@ -151,7 +151,7 @@ export async function updateRecord(
   }
 
   revalidatePath(`/customers/${customerId}`);
-  redirect(`/customers/${customerId}`);
+  redirect(`/customers/${customerId}?saved=record-updated`);
 }
 
 export async function revertRecord(formData: FormData) {
@@ -193,5 +193,5 @@ export async function revertRecord(formData: FormData) {
     .eq("id", recordId);
 
   revalidatePath(`/customers/${customerId}`);
-  redirect(`/customers/${customerId}`);
+  redirect(`/customers/${customerId}?saved=record-reverted`);
 }

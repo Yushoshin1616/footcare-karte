@@ -40,8 +40,11 @@ export default async function CustomerListPage({
         </Link>
       </div>
 
-      <div className="mb-4">
-        <SearchBox defaultValue={keyword} />
+      <div className="relative mb-4">
+        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+          🔍
+        </span>
+        <SearchBox defaultValue={keyword} className="pl-11" />
       </div>
 
       {error && (
@@ -75,14 +78,18 @@ export default async function CustomerListPage({
             <li key={customer.id}>
               <Link
                 href={`/customers/${customer.id}`}
-                className="flex min-h-16 items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-2 active:bg-surface-muted"
+                className="flex min-h-20 items-center gap-4 rounded-2xl border border-border bg-surface px-4 py-3 active:bg-surface-muted"
               >
                 <CustomerAvatar
                   url={photoMap[customer.photo_path ?? ""] ?? null}
                   name={customer.name}
+                  size={64}
                 />
-                <span className="text-base font-medium text-foreground">
+                <span className="flex-1 text-lg font-medium text-foreground">
                   {customer.name}
+                </span>
+                <span className="text-xl text-muted" aria-hidden="true">
+                  ›
                 </span>
               </Link>
             </li>

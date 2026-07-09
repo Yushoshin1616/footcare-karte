@@ -53,5 +53,5 @@ export async function createCustomer(
     return { error: "顧客の登録に失敗しました。時間をおいて再度お試しください。" };
   }
 
-  redirect(`/customers/${id}`);
+  redirect(`/customers/${id}?saved=customer`);
 }

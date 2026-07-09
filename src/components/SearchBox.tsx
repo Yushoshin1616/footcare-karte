@@ -4,7 +4,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { inputBase } from "@/lib/ui";
 
-export function SearchBox({ defaultValue }: { defaultValue: string }) {
+export function SearchBox({
+  defaultValue,
+  className = "",
+}: {
+  defaultValue: string;
+  className?: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [value, setValue] = useState(defaultValue);
@@ -31,7 +37,7 @@ export function SearchBox({ defaultValue }: { defaultValue: string }) {
       onChange={(e) => setValue(e.target.value)}
       placeholder="名前で検索"
       aria-label="顧客を名前で検索"
-      className={inputBase}
+      className={`${inputBase} ${className}`}
     />
   );
 }
