@@ -2,7 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { backupPhotosToBlob } from "@/lib/blob-backup";
 
 export type RecordFormState = { error: string | null };
 
@@ -49,6 +51,8 @@ export async function createRecord(
   if (error) {
     return { error: "記録の保存に失敗しました。時間をおいて再度お試しください。" };
   }
+
+  after(() => backupPhotosToBlob(photoPaths));
 
   revalidatePath(`/customers/${customerId}`);
   redirect(`/customers/${customerId}?saved=record`);
@@ -120,6 +124,8 @@ export async function updateRecord(
   if (updateError) {
     return { error: "記録の更新に失敗しました。時間をおいて再度お試しください。" };
   }
+
+  after(() => backupPhotosToBlob(newPaths));
 
   revalidatePath(`/customers/${customerId}`);
   redirect(`/customers/${customerId}?saved=record-updated`);

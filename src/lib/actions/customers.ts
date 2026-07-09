@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { deleteFolder } from "@/lib/storage";
+import { deleteBlobFolder } from "@/lib/blob-backup";
 
 export type CustomerFormState = { error: string | null };
 
@@ -74,6 +75,7 @@ export async function permanentlyDeleteCustomer(formData: FormData) {
   const supabase = await createClient();
   await supabase.from("customers").delete().eq("id", customerId);
   await deleteFolder(supabase, `customers/${customerId}`).catch(() => {});
+  await deleteBlobFolder(`customers/${customerId}`);
 
   redirect("/trash?saved=customer-purged");
 }
