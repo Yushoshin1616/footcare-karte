@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { deleteFolder } from "@/lib/storage";
 
 export type CustomerFormState = { error: string | null };
 
@@ -38,4 +39,16 @@ export async function createCustomer(
   }
 
   redirect(`/customers/${data.id}?saved=customer`);
+}
+
+export async function deleteCustomer(formData: FormData) {
+  const customerId = String(formData.get("customer_id") || "");
+  if (!customerId) redirect("/");
+
+  const supabase = await createClient();
+
+  await supabase.from("customers").delete().eq("id", customerId);
+  await deleteFolder(supabase, `customers/${customerId}`).catch(() => {});
+
+  redirect("/?saved=customer-deleted");
 }

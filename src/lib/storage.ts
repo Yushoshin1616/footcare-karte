@@ -58,6 +58,36 @@ export async function getSignedUrls(
   return map;
 }
 
+async function listAllFiles(
+  supabase: SupabaseClient<Database>,
+  prefix: string
+): Promise<string[]> {
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .list(prefix, { limit: 1000 });
+  if (error || !data) return [];
+
+  const files: string[] = [];
+  for (const item of data) {
+    const itemPath = `${prefix}/${item.name}`;
+    if (item.id) {
+      files.push(itemPath);
+    } else {
+      files.push(...(await listAllFiles(supabase, itemPath)));
+    }
+  }
+  return files;
+}
+
+export async function deleteFolder(
+  supabase: SupabaseClient<Database>,
+  prefix: string
+): Promise<void> {
+  const files = await listAllFiles(supabase, prefix);
+  if (files.length === 0) return;
+  await supabase.storage.from(BUCKET).remove(files);
+}
+
 export function validatePhoto(file: File): string | null {
   if (!file.type.startsWith("image/")) {
     return "写真は画像ファイルを選択してください。";

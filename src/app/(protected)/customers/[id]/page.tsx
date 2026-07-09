@@ -8,6 +8,7 @@ import { CustomerAvatar } from "@/components/CustomerAvatar";
 import { RecordCard } from "@/components/RecordCard";
 import { QuickPhotoRecordButton } from "@/components/QuickPhotoRecordButton";
 import { SavedBanner } from "@/components/SavedBanner";
+import { DeleteCustomerButton } from "@/components/DeleteCustomerButton";
 import { buttonSecondary } from "@/lib/ui";
 
 export default async function CustomerDetailPage({
@@ -121,6 +122,10 @@ export default async function CustomerDetailPage({
           ))}
         </ul>
       )}
+
+      <div className="mt-10 border-t border-border pt-6">
+        <DeleteCustomerButton customerId={id} customerName={customer.name} />
+      </div>
     </div>
   );
 }

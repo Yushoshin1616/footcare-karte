@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { SearchBox } from "@/components/SearchBox";
 import { CustomerAvatar } from "@/components/CustomerAvatar";
+import { SavedBanner } from "@/components/SavedBanner";
 import { buttonPrimary } from "@/lib/ui";
 
 export default async function CustomerListPage({
@@ -26,6 +28,10 @@ export default async function CustomerListPage({
 
   return (
     <div className="mx-auto max-w-lg px-4 pt-4">
+      <Suspense fallback={null}>
+        <SavedBanner />
+      </Suspense>
+
       <div className="mb-4 flex items-center justify-between gap-3">
         <h1 className="text-xl font-bold text-foreground">顧客一覧</h1>
         <Link href="/customers/new" className={buttonPrimary}>
