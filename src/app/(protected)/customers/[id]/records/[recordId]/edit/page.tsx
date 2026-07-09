@@ -45,8 +45,8 @@ export default async function EditRecordPage({
           ←
         </Link>
         <div>
-          <h1 className="text-xl font-bold text-foreground">記録を編集</h1>
-          <p className="text-sm text-muted">{customer.name} さん</p>
+          <h1 className="text-lg font-bold text-foreground">施術記録を編集</h1>
+          <p className="text-sm text-muted">{customer.name} 様</p>
         </div>
       </div>
 

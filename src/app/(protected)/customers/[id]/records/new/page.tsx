@@ -33,8 +33,8 @@ export default async function NewRecordPage({
           ←
         </Link>
         <div>
-          <h1 className="text-xl font-bold text-foreground">記録を追加</h1>
-          <p className="text-sm text-muted">{customer.name} さん</p>
+          <h1 className="text-lg font-bold text-foreground">施術記録を追加</h1>
+          <p className="text-sm text-muted">{customer.name} 様</p>
         </div>
       </div>
       <div className="rounded-2xl border border-border bg-surface p-4">

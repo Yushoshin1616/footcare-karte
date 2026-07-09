@@ -12,7 +12,6 @@ export async function createCustomer(
 ): Promise<CustomerFormState> {
   const name = String(formData.get("name") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
-  const memo = String(formData.get("memo") || "").trim();
 
   if (!name) {
     return { error: "お名前を入力してください。" };
@@ -28,7 +27,6 @@ export async function createCustomer(
     .insert({
       name,
       phone: phone || null,
-      memo: memo || null,
       created_by: user?.id ?? null,
     })
     .select("id")

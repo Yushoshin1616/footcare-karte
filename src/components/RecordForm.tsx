@@ -72,14 +72,14 @@ export function RecordForm({
 
       <MultiPhotoInput
         pathPrefix={`customers/${customerId}/records/${id}`}
-        label="記録写真"
+        label="状態写真"
         existingPhotos={existingPhotos}
         onUploadingChange={setUploading}
       />
 
       <div>
         <label htmlFor="memo" className={labelBase}>
-          メモ
+          施術内容・申し送り
         </label>
         <textarea
           id="memo"

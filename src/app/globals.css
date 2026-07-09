@@ -35,18 +35,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1b1c19;
-    --foreground: #ece8e0;
-    --surface: #24261f;
-    --surface-muted: #2c2e26;
-    --border: #3a3c33;
-    --muted: #a29c8d;
-    --primary: #6ea287;
-    --primary-hover: #85b69c;
-    --primary-foreground: #10261c;
-    --accent: #d1a86e;
-    --danger: #e17b73;
-    --danger-hover: #ec938c;
+    --background: #333429;
+    --foreground: #f2eee2;
+    --surface: #3e3f33;
+    --surface-muted: #48493c;
+    --border: #58594a;
+    --muted: #bdb7a4;
+    --primary: #7fb094;
+    --primary-hover: #92c1a6;
+    --primary-foreground: #16281d;
+    --accent: #d8b077;
+    --danger: #e79088;
+    --danger-hover: #ef9f97;
   }
 }
 
@@ -78,15 +78,25 @@ select {
   font-size: 16px;
 }
 
-/* Android Chrome などで日付入力のカレンダーアイコンが枠からはみ出すのを防ぐ */
+/* Android/iOS で日付入力が枠からはみ出すのを防ぐ */
 input[type="date"] {
   min-width: 0;
+  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   margin-left: 4px;
+}
+
+/* iOS Safari は日付入力の中身(ホイールピッカーのトリガー部分)が
+   親要素の幅を無視して広がることがあるため明示的に抑える */
+input[type="date"]::-webkit-datetime-edit {
+  max-width: 100%;
+  overflow: hidden;
 }
 
 @keyframes saved-banner {

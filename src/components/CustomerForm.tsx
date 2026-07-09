@@ -6,8 +6,7 @@ import {
   createCustomer,
   type CustomerFormState,
 } from "@/lib/actions/customers";
-import { buttonPrimary, inputBase, labelBase, textareaBase } from "@/lib/ui";
-
+import { buttonPrimary, inputBase, labelBase } from "@/lib/ui";
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -51,18 +50,6 @@ export function CustomerForm() {
           inputMode="tel"
           className={inputBase}
           placeholder="090-1234-5678"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="memo" className={labelBase}>
-          メモ
-        </label>
-        <textarea
-          id="memo"
-          name="memo"
-          className={textareaBase}
-          placeholder="アレルギーや注意事項など"
         />
       </div>
 
