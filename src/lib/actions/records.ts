@@ -89,6 +89,8 @@ export async function updateRecord(
     return { error: "記録が見つかりませんでした。" };
   }
 
+  // 写真を「削除」しても Storage の実体は消さない。record_history に元の
+  // photo_paths が残るため、編集履歴からいつでも復元できる（データ消失防止）。
   const keptPaths = current.photo_paths.filter((p) => !removePaths.has(p));
   const photoPaths = [...keptPaths, ...newPaths];
 

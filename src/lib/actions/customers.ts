@@ -65,6 +65,8 @@ export async function restoreCustomer(formData: FormData) {
   redirect(`/customers/${customerId}?saved=customer-restored`);
 }
 
+// Storage の写真ファイルを実際に消す唯一の経路。誤操作防止のため
+// 削除一覧からの強い確認ダイアログを経由してのみ呼び出されること。
 export async function permanentlyDeleteCustomer(formData: FormData) {
   const customerId = String(formData.get("customer_id") || "");
   if (!customerId) redirect("/trash");

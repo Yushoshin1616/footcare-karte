@@ -30,6 +30,14 @@ const EXTENSION_MIME_TYPES: Record<string, string> = {
   tiff: "image/tiff",
 };
 
+const UPLOAD_MAX_ATTEMPTS = 4;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// 通信が不安定な現場（Wi-Fiが弱い施術室など）でも写真を失わないよう、
+// 失敗しても間隔を空けて自動的に再送信する
 export async function uploadPhoto(
   supabase: SupabaseClient<Database>,
   file: File,
@@ -38,20 +46,30 @@ export async function uploadPhoto(
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${pathPrefix}/${crypto.randomUUID()}.${ext}`;
   const contentType = file.type || EXTENSION_MIME_TYPES[ext] || undefined;
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-    contentType,
-    upsert: false,
-  });
-  if (error) {
-    throw new Error(`写真のアップロードに失敗しました: ${error.message}`);
+
+  let lastErrorMessage = "";
+  for (let attempt = 1; attempt <= UPLOAD_MAX_ATTEMPTS; attempt++) {
+    const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+      contentType,
+      upsert: true,
+    });
+    if (!error) return path;
+
+    lastErrorMessage = error.message;
+    if (attempt < UPLOAD_MAX_ATTEMPTS) {
+      await sleep(800 * attempt);
+    }
   }
-  return path;
+
+  throw new Error(
+    `写真のアップロードに失敗しました（${UPLOAD_MAX_ATTEMPTS}回試行）: ${lastErrorMessage}`
+  );
 }
 
 export async function getSignedUrls(
   supabase: SupabaseClient<Database>,
   paths: (string | null | undefined)[],
-  expiresInSeconds = 60 * 60
+  expiresInSeconds = 60 * 60 * 24
 ): Promise<Record<string, string>> {
   const validPaths = Array.from(
     new Set(paths.filter((p): p is string => !!p))
