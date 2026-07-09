@@ -2,9 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSignedUrl, getSignedUrls } from "@/lib/storage";
+import { createRecord } from "@/lib/actions/records";
 import { CustomerAvatar } from "@/components/CustomerAvatar";
 import { RecordCard } from "@/components/RecordCard";
-import { buttonPrimary } from "@/lib/ui";
+import { QuickPhotoRecordButton } from "@/components/QuickPhotoRecordButton";
+import { buttonSecondary } from "@/lib/ui";
 
 export default async function CustomerDetailPage({
   params,
@@ -66,9 +68,16 @@ export default async function CustomerDetailPage({
         </div>
       )}
 
+      <div className="mb-3">
+        <QuickPhotoRecordButton action={createRecord.bind(null, id)} />
+      </div>
+
       <div className="mb-4">
-        <Link href={`/customers/${id}/records/new`} className={`${buttonPrimary} w-full`}>
-          + 記録を追加
+        <Link
+          href={`/customers/${id}/records/new`}
+          className={`${buttonSecondary} w-full`}
+        >
+          + 記録を追加（日付・メモを指定）
         </Link>
       </div>
 
