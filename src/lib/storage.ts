@@ -2,7 +2,33 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 
 const BUCKET = "customer-photos";
-export const MAX_PHOTO_SIZE = 10 * 1024 * 1024;
+export const MAX_PHOTO_SIZE = 20 * 1024 * 1024;
+
+const IMAGE_EXTENSIONS = [
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "webp",
+  "heic",
+  "heif",
+  "bmp",
+  "tif",
+  "tiff",
+];
+
+const EXTENSION_MIME_TYPES: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  gif: "image/gif",
+  webp: "image/webp",
+  heic: "image/heic",
+  heif: "image/heif",
+  bmp: "image/bmp",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+};
 
 export async function uploadPhoto(
   supabase: SupabaseClient<Database>,
@@ -11,8 +37,9 @@ export async function uploadPhoto(
 ): Promise<string> {
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${pathPrefix}/${crypto.randomUUID()}.${ext}`;
+  const contentType = file.type || EXTENSION_MIME_TYPES[ext] || undefined;
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-    contentType: file.type || undefined,
+    contentType,
     upsert: false,
   });
   if (error) {
@@ -89,11 +116,15 @@ export async function deleteFolder(
 }
 
 export function validatePhoto(file: File): string | null {
-  if (!file.type.startsWith("image/")) {
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+  const looksLikeImage =
+    file.type.startsWith("image/") || IMAGE_EXTENSIONS.includes(ext);
+
+  if (!looksLikeImage) {
     return "写真は画像ファイルを選択してください。";
   }
   if (file.size > MAX_PHOTO_SIZE) {
-    return "写真のサイズは10MB以下にしてください。";
+    return "写真のサイズは20MB以下にしてください。";
   }
   return null;
 }
