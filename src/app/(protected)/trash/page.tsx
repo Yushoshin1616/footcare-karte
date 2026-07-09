@@ -30,7 +30,7 @@ export default async function TrashPage() {
         >
           ←
         </Link>
-        <h1 className="text-xl font-bold text-foreground">ゴミ箱</h1>
+        <h1 className="text-xl font-bold text-foreground">削除一覧</h1>
       </div>
 
       <p className="mb-4 text-sm text-muted">
@@ -39,13 +39,13 @@ export default async function TrashPage() {
 
       {error && (
         <p className="rounded-xl bg-danger/10 px-4 py-3 text-sm text-danger">
-          ゴミ箱の取得に失敗しました。時間をおいて再度お試しください。
+          削除一覧の取得に失敗しました。時間をおいて再度お試しください。
         </p>
       )}
 
       {!error && customers && customers.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-muted">
-          ゴミ箱は空です。
+          削除した顧客はいません。
         </div>
       )}
 

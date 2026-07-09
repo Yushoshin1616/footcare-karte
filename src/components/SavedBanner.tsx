@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const MESSAGES: Record<string, string> = {
   customer: "顧客を登録しました",
-  "customer-deleted": "顧客を削除しました（ゴミ箱から元に戻せます）",
+  "customer-deleted": "顧客を削除しました（削除一覧から元に戻せます）",
   "customer-restored": "顧客を元に戻しました",
   "customer-purged": "顧客を完全に削除しました",
   record: "記録を保存しました",

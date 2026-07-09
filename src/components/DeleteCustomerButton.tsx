@@ -26,7 +26,7 @@ export function DeleteCustomerButton({
       onSubmit={(e) => {
         if (
           !confirm(
-            `${customerName} さんを削除します。\n一覧には表示されなくなりますが、「ゴミ箱」から元に戻すこともできます。よろしいですか？`
+            `${customerName} さんを削除します。\n一覧には表示されなくなりますが、「削除一覧」から元に戻すこともできます。よろしいですか？`
           )
         ) {
           e.preventDefault();

@@ -40,7 +40,7 @@ export default async function CustomerListPage({
             href="/trash"
             className="flex min-h-11 items-center rounded-lg px-2 text-sm text-muted active:bg-surface-muted"
           >
-            🗑 ゴミ箱
+            🗑 削除一覧
           </Link>
           <Link href="/customers/new" className={buttonPrimary}>
             + 新規顧客
