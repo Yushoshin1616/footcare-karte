@@ -1,41 +1,9 @@
-@import "tailwindcss";
-
-:root {
-  color-scheme: light;
-  --background: #ffffff;
-  --foreground: #2b2a26;
-  --surface: #ffffff;
-  --surface-muted: #f2f1ed;
-  --border: #e3ddd0;
-  --muted: #7a7468;
-  --primary: #3f6b58;
-  --primary-hover: #305444;
-  --primary-foreground: #ffffff;
-  --accent: #b98a52;
-  --danger: #b3453d;
-  --danger-hover: #97362f;
-  --ring: #3f6b58;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-surface-muted: var(--surface-muted);
-  --color-border: var(--border);
-  --color-muted: var(--muted);
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-accent: var(--accent);
-  --color-danger: var(--danger);
-  --color-danger-hover: var(--danger-hover);
-  --color-ring: var(--ring);
-  --font-sans: var(--font-noto-sans-jp);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
-  border-color: var(--border);
+  border-color: #e3ddd0;
 }
 
 html {
@@ -43,8 +11,8 @@ html {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #ffffff;
+  color: #2b2a26;
   font-family: var(--font-noto-sans-jp), "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
 }
 
