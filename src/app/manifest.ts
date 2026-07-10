@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "フットケアサロン向け顧客カルテ管理アプリ",
     start_url: "/",
     display: "standalone",
-    background_color: "#f7f4ef",
+    background_color: "#ffffff",
     theme_color: "#3f6b58",
     lang: "ja",
     icons: [
