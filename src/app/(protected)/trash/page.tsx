@@ -34,7 +34,7 @@ export default async function TrashPage() {
       </div>
 
       <p className="mb-4 text-sm text-muted">
-        削除した顧客がここに表示されます。「元に戻す」で復元できます。
+        削除した顧客がここに表示されます。名前をタップするとカルテ（記録）を確認でき、「元に戻す」で復元できます。
       </p>
 
       {error && (
@@ -56,7 +56,10 @@ export default async function TrashPage() {
               key={customer.id}
               className="rounded-2xl border border-border bg-surface p-4"
             >
-              <div className="mb-3 flex items-center gap-3">
+              <Link
+                href={`/customers/${customer.id}`}
+                className="mb-3 flex items-center gap-3 active:opacity-70"
+              >
                 <CustomerAvatar name={customer.name} size={48} />
                 <div className="flex-1">
                   <p className="text-base font-medium text-foreground">
@@ -66,7 +69,10 @@ export default async function TrashPage() {
                     削除日時: {formatDateTime(customer.deleted_at!)}
                   </p>
                 </div>
-              </div>
+                <span className="text-lg text-muted" aria-hidden="true">
+                  ›
+                </span>
+              </Link>
               <div className="flex items-center justify-between gap-2">
                 <RestoreCustomerButton customerId={customer.id} />
                 <PermanentlyDeleteCustomerButton

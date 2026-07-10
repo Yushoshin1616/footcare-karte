@@ -2,24 +2,37 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import {
-  createCustomer,
-  type CustomerFormState,
-} from "@/lib/actions/customers";
+import { createCustomer, type CustomerFormState } from "@/lib/actions/customers";
 import { buttonPrimary, inputBase, labelBase } from "@/lib/ui";
-function SubmitButton() {
+
+function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className={`${buttonPrimary} w-full`} disabled={pending}>
-      {pending ? "登録中…" : "登録する"}
+      {pending ? pendingLabel : label}
     </button>
   );
 }
 
 const initialState: CustomerFormState = { error: null };
 
-export function CustomerForm() {
-  const [state, formAction] = useActionState(createCustomer, initialState);
+export function CustomerForm({
+  action = createCustomer,
+  submitLabel = "登録する",
+  submitPendingLabel = "登録中…",
+  defaultName = "",
+  defaultPhone = "",
+}: {
+  action?: (
+    state: CustomerFormState,
+    formData: FormData
+  ) => Promise<CustomerFormState>;
+  submitLabel?: string;
+  submitPendingLabel?: string;
+  defaultName?: string;
+  defaultPhone?: string;
+}) {
+  const [state, formAction] = useActionState(action, initialState);
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
@@ -33,6 +46,7 @@ export function CustomerForm() {
           type="text"
           required
           autoComplete="off"
+          defaultValue={defaultName}
           className={inputBase}
           placeholder="山田 花子"
         />
@@ -48,6 +62,7 @@ export function CustomerForm() {
           type="tel"
           autoComplete="off"
           inputMode="tel"
+          defaultValue={defaultPhone}
           className={inputBase}
           placeholder="090-1234-5678"
         />
@@ -59,7 +74,7 @@ export function CustomerForm() {
         </p>
       )}
 
-      <SubmitButton />
+      <SubmitButton label={submitLabel} pendingLabel={submitPendingLabel} />
     </form>
   );
 }

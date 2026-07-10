@@ -40,6 +40,31 @@ export async function createCustomer(
   redirect(`/customers/${data.id}?saved=customer`);
 }
 
+export async function updateCustomer(
+  customerId: string,
+  _prevState: CustomerFormState,
+  formData: FormData
+): Promise<CustomerFormState> {
+  const name = String(formData.get("name") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+
+  if (!name) {
+    return { error: "お名前を入力してください。" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("customers")
+    .update({ name, phone: phone || null })
+    .eq("id", customerId);
+
+  if (error) {
+    return { error: "顧客情報の更新に失敗しました。時間をおいて再度お試しください。" };
+  }
+
+  redirect(`/customers/${customerId}?saved=customer-updated`);
+}
+
 export async function deleteCustomer(formData: FormData) {
   const customerId = String(formData.get("customer_id") || "");
   if (!customerId) redirect("/");

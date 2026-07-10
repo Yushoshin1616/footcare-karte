@@ -7,6 +7,7 @@ import { ChartHeader } from "@/components/ChartHeader";
 import { RecordCard } from "@/components/RecordCard";
 import { SavedBanner } from "@/components/SavedBanner";
 import { DeleteCustomerButton } from "@/components/DeleteCustomerButton";
+import { RestoreCustomerButton } from "@/components/RestoreCustomerButton";
 import { buttonPrimary } from "@/lib/ui";
 
 export default async function CustomerDetailPage({
@@ -21,12 +22,13 @@ export default async function CustomerDetailPage({
     .from("customers")
     .select("*")
     .eq("id", id)
-    .is("deleted_at", null)
     .single();
 
   if (customerError || !customer) {
     notFound();
   }
+
+  const isDeleted = customer.deleted_at !== null;
 
   const { data: records, error: recordsError } = await supabase
     .from("records")
@@ -48,15 +50,32 @@ export default async function CustomerDetailPage({
         <SavedBanner />
       </Suspense>
 
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-4 flex items-center justify-between gap-2">
         <Link
-          href="/"
+          href={isDeleted ? "/trash" : "/"}
           className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted active:bg-surface-muted"
           aria-label="一覧に戻る"
         >
           ←
         </Link>
+        {!isDeleted && (
+          <Link
+            href={`/customers/${id}/edit`}
+            className="flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-primary active:bg-surface-muted"
+          >
+            顧客情報を編集
+          </Link>
+        )}
       </div>
+
+      {isDeleted && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3">
+          <p className="text-sm text-danger">
+            この顧客は削除されています。記録はすべて残っています。
+          </p>
+          <RestoreCustomerButton customerId={id} />
+        </div>
+      )}
 
       <ChartHeader
         name={customer.name}
@@ -65,16 +84,18 @@ export default async function CustomerDetailPage({
         customerId={id}
       />
 
-      <div className="mb-4 mt-4">
-        <Link
-          href={`/customers/${id}/records/new`}
-          className={`${buttonPrimary} w-full`}
-        >
-          + 施術記録を追加
-        </Link>
-      </div>
+      {!isDeleted && (
+        <div className="mb-4 mt-4">
+          <Link
+            href={`/customers/${id}/records/new`}
+            className={`${buttonPrimary} w-full`}
+          >
+            + 施術記録を追加
+          </Link>
+        </div>
+      )}
 
-      <div>
+      <div className="mt-4">
         <h2 className="mb-2 text-sm font-bold text-muted">施術記録一覧</h2>
 
         {recordsError && (
@@ -86,8 +107,12 @@ export default async function CustomerDetailPage({
         {!recordsError && recordCount === 0 && (
           <div className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-muted">
             まだ施術記録がありません。
-            <br />
-            上のボタンから最初の記録を追加してください。
+            {!isDeleted && (
+              <>
+                <br />
+                上のボタンから最初の記録を追加してください。
+              </>
+            )}
           </div>
         )}
 
@@ -111,9 +136,11 @@ export default async function CustomerDetailPage({
         )}
       </div>
 
-      <div className="mt-10 border-t border-border pt-6">
-        <DeleteCustomerButton customerId={id} customerName={customer.name} />
-      </div>
+      {!isDeleted && (
+        <div className="mt-10 border-t border-border pt-6">
+          <DeleteCustomerButton customerId={id} customerName={customer.name} />
+        </div>
+      )}
     </div>
   );
 }
